@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+flight_logs/
+*.log
+work_*.log
+data/simulated_run.csv
+data/*_legacy_*.csv
