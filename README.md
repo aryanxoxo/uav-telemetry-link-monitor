@@ -2,14 +2,14 @@
 
 Telemetry link monitoring tool for ESP32 LoRa UAV ground stations. The drone node transmits compact flight state over a 915 MHz LoRa link; the ground station echoes sequence metadata to measure round-trip latency and streams link metrics to a Python dashboard.
 
-The selected demo aircraft is a **Parrot Anafi** carrying a separate Arduino-style **ESP32 + LoRa telemetry payload**. The payload is independent of the Anafi flight-control system and is used only for telemetry link measurement.
+The selected test aircraft is a **Parrot Anafi** carrying a separate Arduino-style **ESP32 + LoRa telemetry payload**. The payload is independent of the Anafi flight-control system and is used only for telemetry link measurement.
 
 ## What Is Included
 
 - ESP32 drone transmitter firmware with configurable spreading factor and bandwidth.
 - ESP32 ground station receiver firmware that logs RSSI, SNR, packet loss inputs, and latency echo data.
-- Python real-time dashboard with antenna geometry map, RSSI, SNR, packet loss, and latency trends.
-- Simulator mode for dashboard development without hardware.
+- Python real-time dashboard with antenna geometry map, RSSI, SNR, packet loss, and latency trends when connected to the ground-station serial feed.
+- Simulator mode for dashboard development and UI checks without hardware.
 - CSV flight log output for post-flight latency and link-margin analysis.
 - Hardware setup and drone-selection notes for Parrot Anafi + ESP32/Arduino LoRa payload.
 
@@ -56,7 +56,7 @@ Default pin map:
 
 Adjust the pin constants in both sketches if your board differs.
 
-## Quick Start: Dashboard Simulator
+## Quick Start: Dashboard UI Check
 
 From this folder:
 
@@ -70,7 +70,7 @@ Open:
 http://127.0.0.1:8765
 ```
 
-The simulator generates realistic RSSI fades, SNR variation, burst packet loss, latency jitter, aircraft range/bearing, and antenna off-axis effects so the dashboard can be evaluated before hardware is attached.
+Simulator mode creates representative link samples so the dashboard layout, charts, CSV logging, and antenna-geometry view can be checked before hardware is attached. It is not a substitute for measured RF data.
 
 ## Quick Start: Hardware
 
@@ -116,9 +116,9 @@ The dashboard accepts these fields:
 - `antenna_heading_deg`: optional ground antenna heading in degrees true. If omitted, the CLI value is used.
 - `range_m` / `bearing_deg`: optional fallback when GPS is unavailable. If latitude/longitude is present, the dashboard computes range and bearing itself.
 
-## Map And Antenna View
+## Dashboard Behavior With Hardware Connected
 
-The dashboard now opens with a local range map instead of pure telemetry first. It shows the ground station at center, the antenna centerline and beam, the aircraft track, live range, bearing, altitude, and off-axis angle.
+When the ground-station ESP32 is connected over USB serial, the dashboard reads newline-delimited JSON from the receiver. It shows the ground station at center, the antenna centerline and beam, the aircraft track, live range, bearing, altitude, off-axis angle, RSSI, SNR, packet loss, latency, and spreading-factor recommendation.
 
 This view is intentionally local and tile-free so it works at a field site without internet access. It is most useful for answering: "Did the link degrade because the aircraft left the antenna beam, because it got farther away, or because the pass caused multipath?"
 
@@ -135,6 +135,6 @@ The sketches include a control message path for applying the recommendation. In 
 
 The telemetry payload and latency measurement are intentionally separated. The drone keeps a small table of transmit timestamps indexed by sequence number, and the ground station echoes sequence metadata. This keeps forward error correction or telemetry payload changes from biasing latency measurements during burst loss events caused by multipath fading.
 
-## Flight Test Outcome Target
+## Validation Target
 
-The included settings target the described open-field outcome: reliable telemetry at 2.8 km using SF9, 125 kHz bandwidth, and moderate transmit intervals. Antenna orientation effects are visible in the dashboard through correlated RSSI/SNR margin dips and latency spikes.
+The included settings provide a starting point for open-field validation using SF9, 125 kHz bandwidth, and moderate transmit intervals. A good validation run should log RSSI, SNR, packet loss, latency, range/bearing, and antenna heading so link-margin changes can be reviewed after the test.
