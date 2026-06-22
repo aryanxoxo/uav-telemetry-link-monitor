@@ -1,4 +1,6 @@
-# UAV Telemetry Link Monitor
+﻿# UAV Telemetry Link Monitor
+
+> Public archive note: this repository is a portfolio/demo-safe version prepared from private working repositories/materials; sensitive details, credentials, raw logs, and proprietary context are intentionally omitted.
 
 Telemetry link monitoring tool for ESP32 LoRa UAV ground stations. The drone node transmits compact flight state over a 915 MHz LoRa link; the ground station echoes sequence metadata to measure round-trip latency and streams link metrics to a Python dashboard.
 
